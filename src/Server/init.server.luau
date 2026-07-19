@@ -7,24 +7,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Store = require(ReplicatedStorage.Shared.Store)
 local store = Store.makeStore()
 
-local MapBuilder = require(script.Map.Builder)
 local Profiles = require(script.Data.Profiles)
 local WorldStateService = require(script.Data.WorldStateService)
 local ProgressionService = require(script.Data.ProgressionService)
 
--- RemoteEvent used by WorldStateService/ProgressionService to tell the client.
-if not ReplicatedStorage:FindFirstChild("WorldStateChanged") then
-	local ev = Instance.new("RemoteEvent")
-	ev.Name = "WorldStateChanged"
-	ev.Parent = ReplicatedStorage
-end
-
--- Build the single-building hub (rooms, stairs, indicators, radio station, prompts).
-local builder = MapBuilder.new()
-builder:buildBuildEnvelope()
-builder:buildRooms()
-builder:buildModeMarkers()
-builder:finish()
+-- WorldStateChanged RemoteEvent is declared in default.project.json, so it
+-- exists in ReplicatedStorage at runtime (no Instance.new needed here).
 
 -- Start the data layer: load profiles, drive progression + world unlocks.
 Profiles.start()

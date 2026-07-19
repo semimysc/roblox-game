@@ -19,10 +19,404 @@
                 "$className": "SpawnLocation",
                 "$properties": {
                     "Size": {"Vector3": [12, 1, 12]},
-                    "Position": {"Vector3": [0, 0.5, 0]},
+                    "Position": {"Vector3": [0, 0.5, 24]},
                     "Anchored": true,
                     "Color": {"Color3": [0.61176, 0.52941, 0.35686]},
                     "Material": "Wood"
+                }
+            },
+
+            "HubBuilding": {
+                "$className": "Model",
+                "$properties": {
+                },
+                "GroundSlab": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [80, 1, 56]},
+                        "Position": {"Vector3": [0, -0.5, 0]},
+                        "Anchored": true,
+                        "Color": {"Color3": [0.39, 0.40, 0.44]},
+                        "Material": "WoodPlanks"
+                    }
+                },
+                "UpperSlab": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [80, 1, 56]},
+                        "Position": {"Vector3": [0, 17.5, 0]},
+                        "Anchored": true,
+                        "Color": {"Color3": [0.39, 0.40, 0.44]},
+                        "Material": "WoodPlanks"
+                    }
+                },
+                "WallFrontGround": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [80, 18, 1]},
+                        "Position": {"Vector3": [0, 9, 28]},
+                        "Anchored": true,
+                        "Color": {"Color3": [0.31, 0.32, 0.40]},
+                        "Material": "Concrete"
+                    }
+                },
+                "WallBackGround": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [80, 18, 1]},
+                        "Position": {"Vector3": [0, 9, -28]},
+                        "Anchored": true,
+                        "Color": {"Color3": [0.31, 0.32, 0.40]},
+                        "Material": "Concrete"
+                    }
+                },
+                "WallLeftGround": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [1, 18, 56]},
+                        "Position": {"Vector3": [-40, 9, 0]},
+                        "Anchored": true,
+                        "Color": {"Color3": [0.31, 0.32, 0.40]},
+                        "Material": "Concrete"
+                    }
+                },
+                "WallRightGround": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [1, 18, 56]},
+                        "Position": {"Vector3": [40, 9, 0]},
+                        "Anchored": true,
+                        "Color": {"Color3": [0.31, 0.32, 0.40]},
+                        "Material": "Concrete"
+                    }
+                },
+                "WallFrontUpper": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [80, 18, 1]},
+                        "Position": {"Vector3": [0, 27, 28]},
+                        "Anchored": true,
+                        "Color": {"Color3": [0.31, 0.32, 0.40]},
+                        "Material": "Concrete"
+                    }
+                },
+                "WallBackUpper": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [80, 18, 1]},
+                        "Position": {"Vector3": [0, 27, -28]},
+                        "Anchored": true,
+                        "Color": {"Color3": [0.31, 0.32, 0.40]},
+                        "Material": "Concrete"
+                    }
+                },
+                "WallLeftUpper": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [1, 18, 56]},
+                        "Position": {"Vector3": [-40, 27, 0]},
+                        "Anchored": true,
+                        "Color": {"Color3": [0.31, 0.32, 0.40]},
+                        "Material": "Concrete"
+                    }
+                },
+                "WallRightUpper": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [1, 18, 56]},
+                        "Position": {"Vector3": [40, 27, 0]},
+                        "Anchored": true,
+                        "Color": {"Color3": [0.31, 0.32, 0.40]},
+                        "Material": "Concrete"
+                    }
+                },
+
+                "LockedDoor": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [8, 14, 1]},
+                        "Position": {"Vector3": [-2, 7, -7.5]},
+                        "Anchored": true,
+                        "Color": {"Color3": [0.16, 0.16, 0.20]},
+                        "Material": "Metal",
+                        "Transparency": 0.15
+                    }
+                },
+
+                "Staircase": {
+                    "$className": "Model",
+                    "$properties": {
+                    },
+                    "Step01": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [10, 2, 3]},
+                            "Position": {"Vector3": [30, 1, 20]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.31, 0.32, 0.36]},
+                            "Material": "Wood"
+                        }
+                    },
+                    "Step02": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [10, 2, 3]},
+                            "Position": {"Vector3": [30, 3, 17]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.31, 0.32, 0.36]},
+                            "Material": "Wood"
+                        }
+                    },
+                    "Step03": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [10, 2, 3]},
+                            "Position": {"Vector3": [30, 5, 14]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.31, 0.32, 0.36]},
+                            "Material": "Wood"
+                        }
+                    },
+                    "Step04": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [10, 2, 3]},
+                            "Position": {"Vector3": [30, 7, 11]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.31, 0.32, 0.36]},
+                            "Material": "Wood"
+                        }
+                    },
+                    "Step05": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [10, 2, 3]},
+                            "Position": {"Vector3": [30, 9, 8]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.31, 0.32, 0.36]},
+                            "Material": "Wood"
+                        }
+                    },
+                    "Step06": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [10, 2, 3]},
+                            "Position": {"Vector3": [30, 11, 5]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.31, 0.32, 0.36]},
+                            "Material": "Wood"
+                        }
+                    },
+                    "Step07": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [10, 2, 3]},
+                            "Position": {"Vector3": [30, 13, 2]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.31, 0.32, 0.36]},
+                            "Material": "Wood"
+                        }
+                    },
+                    "Step08": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [10, 2, 3]},
+                            "Position": {"Vector3": [30, 15, -1]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.31, 0.32, 0.36]},
+                            "Material": "Wood"
+                        }
+                    },
+                    "Step09": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [10, 2, 3]},
+                            "Position": {"Vector3": [30, 17, -4]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.31, 0.32, 0.36]},
+                            "Material": "Wood"
+                        }
+                    },
+                    "Step10": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [10, 2, 3]},
+                            "Position": {"Vector3": [30, 18, -7]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.31, 0.32, 0.36]},
+                            "Material": "Wood"
+                        }
+                    }
+                },
+
+                "RadioStation": {
+                    "$className": "Model",
+                    "$properties": {
+                    },
+                    "Desk": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [10, 3, 5]},
+                            "Position": {"Vector3": [10, 1.5, -14]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.18, 0.19, 0.24]},
+                            "Material": "Metal"
+                        }
+                    },
+                    "Console": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [8, 2, 3]},
+                            "Position": {"Vector3": [10, 4, -14]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.08, 0.09, 0.13]},
+                            "Material": "Neon"
+                        }
+                    },
+                    "Mast": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [0.6, 14, 0.6]},
+                            "Position": {"Vector3": [14, 9, -14]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.59, 0.59, 0.63]},
+                            "Material": "Metal"
+                        }
+                    },
+                    "Screen": {
+                        "$className": "Part",
+                        "$properties": {
+                            "Size": {"Vector3": [7, 3, 0.4]},
+                            "Position": {"Vector3": [10, 6, -12.4]},
+                            "Anchored": true,
+                            "Color": {"Color3": [0.35, 0.78, 1.0]},
+                            "Material": "Neon"
+                        }
+                    }
+                }
+            },
+
+            "ModeMarkers": {
+                "$className": "Folder",
+                "SimulationInteract": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [4, 6, 4]},
+                        "Position": {"Vector3": [26, 4, 10]},
+                        "Color": {"Color3": [0.24, 0.25, 0.31]},
+                        "Material": "Metal",
+                        "Anchored": true,
+                        "CanCollide": false,
+                        "Transparency": 0.6
+                    },
+                    "$attributes": { "ModeId": "Simulation" },
+                    "EnterMode": {
+                        "$className": "ProximityPrompt",
+                        "$properties": {
+                            "ActionText": "Enter",
+                            "ObjectText": "Simulation",
+                            "KeyboardKeyCode": "E",
+                            "RequiresLineOfSight": false,
+                            "MaxActivationDistance": 12,
+                            "HoldDuration": 0.2
+                        }
+                    }
+                },
+                "UrgentRequestsInteract": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [4, 6, 4]},
+                        "Position": {"Vector3": [10, 4, -8]},
+                        "Color": {"Color3": [0.24, 0.25, 0.31]},
+                        "Material": "Metal",
+                        "Anchored": true,
+                        "CanCollide": false,
+                        "Transparency": 0.6
+                    },
+                    "$attributes": { "ModeId": "UrgentRequests" },
+                    "EnterMode": {
+                        "$className": "ProximityPrompt",
+                        "$properties": {
+                            "ActionText": "Enter",
+                            "ObjectText": "Urgent Requests",
+                            "KeyboardKeyCode": "E",
+                            "RequiresLineOfSight": false,
+                            "MaxActivationDistance": 12,
+                            "HoldDuration": 0.2
+                        }
+                    }
+                },
+                "ComputerLabInteract": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [4, 6, 4]},
+                        "Position": {"Vector3": [-24, 4, -8]},
+                        "Color": {"Color3": [0.24, 0.25, 0.31]},
+                        "Material": "Metal",
+                        "Anchored": true,
+                        "CanCollide": false,
+                        "Transparency": 0.6
+                    },
+                    "$attributes": { "ModeId": "ComputerLab" },
+                    "EnterMode": {
+                        "$className": "ProximityPrompt",
+                        "$properties": {
+                            "ActionText": "Enter",
+                            "ObjectText": "Computer Lab",
+                            "KeyboardKeyCode": "E",
+                            "RequiresLineOfSight": false,
+                            "MaxActivationDistance": 12,
+                            "HoldDuration": 0.2
+                        }
+                    }
+                },
+                "RepairInteract": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [4, 6, 4]},
+                        "Position": {"Vector3": [34, 4, -8]},
+                        "Color": {"Color3": [0.24, 0.25, 0.31]},
+                        "Material": "Metal",
+                        "Anchored": true,
+                        "CanCollide": false,
+                        "Transparency": 0.6
+                    },
+                    "$attributes": { "ModeId": "Repair" },
+                    "EnterMode": {
+                        "$className": "ProximityPrompt",
+                        "$properties": {
+                            "ActionText": "Enter",
+                            "ObjectText": "Repair Room",
+                            "KeyboardKeyCode": "E",
+                            "RequiresLineOfSight": false,
+                            "MaxActivationDistance": 12,
+                            "HoldDuration": 0.2
+                        }
+                    }
+                },
+                "CardShelfInteract": {
+                    "$className": "Part",
+                    "$properties": {
+                        "Size": {"Vector3": [4, 6, 4]},
+                        "Position": {"Vector3": [-26, 4, 8]},
+                        "Color": {"Color3": [0.24, 0.25, 0.31]},
+                        "Material": "Metal",
+                        "Anchored": true,
+                        "CanCollide": false,
+                        "Transparency": 0.6
+                    },
+                    "$attributes": { "ModeId": "CardShelf" },
+                    "EnterMode": {
+                        "$className": "ProximityPrompt",
+                        "$properties": {
+                            "ActionText": "Enter",
+                            "ObjectText": "Card Shelf",
+                            "KeyboardKeyCode": "E",
+                            "RequiresLineOfSight": false,
+                            "MaxActivationDistance": 12,
+                            "HoldDuration": 0.2
+                        }
+                    }
                 }
             }
         },
@@ -37,6 +431,9 @@
             },
             "Shared": {
                 "$path": "src/Shared"
+            },
+            "WorldStateChanged": {
+                "$className": "RemoteEvent"
             }
         },
 
