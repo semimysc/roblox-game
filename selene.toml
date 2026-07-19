@@ -1,0 +1,24 @@
+[config]
+std = "roblox"
+lint = [
+    "approximate-definition",
+    "bad-string-escape",
+    "compare-nan",
+    "divide-by-zero",
+    "duplicate-keys",
+    "empty-while",
+    "global-usage",
+    "if-same-branches",
+    "incorrect-standard-library-use",
+    "manual-cargo",
+    "multiple-statements",
+    "must-use",
+    "parenthese-conditions",
+    "roblox-union-type",
+    "shadowing",
+    "simul-roblox",
+    "standard-library",
+    "table-literal-syntax",
+    "type-infer",
+    "unused-variable",
+]

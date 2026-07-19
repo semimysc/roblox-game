@@ -1,0 +1,38 @@
+# Tungsten asset manager configuration (pwnwrkz/tungsten)
+# Replaces tarmac.toml. Tungsten packs + uploads assets to Roblox via the
+# Open Cloud API, then generates Luau modules referencing rbxassetid:// IDs.
+#
+# Auth: Tungsten reads its API key from the TUNGSTEN_API_KEY env var.
+#   Set it (Roblox Open Cloud API key) before `tungsten sync --target cloud`.
+#   Until then, `tungsten test` / `tungsten sync --target debug` work offline.
+#
+# Generate this file with:  tungsten init
+
+[creator]
+type = "user"
+id = 0   # your Roblox user id (or a group id with type = "group")
+
+[codegen]
+style = "nested"
+strip_extension = true
+
+# Input groups — each becomes a generated Luau module of asset IDs.
+[inputs.images]
+path = "assets/images/**/*"
+output_path = "src/Generated/Images.luau"
+type = "image"
+packable = true        # pack into a spritesheet to cut draw calls
+bleed = true
+
+[inputs.audio]
+path = "assets/audio/**/*"
+output_path = "src/Generated/Audio.luau"
+type = "audio"
+
+[inputs.models]
+path = "assets/models/**/*"
+output_path = "src/Generated/Models.luau"
+type = "model"
+
+# Global upload concurrency (optional, default 10). Lower if you hit rate limits.
+max_concurrent_uploads = 10

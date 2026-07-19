@@ -1,0 +1,29 @@
+# Rokit / Aftman toolchain
+.rokit/
+.aftman/
+
+# Wally dependencies (installed into ./Packages)
+Packages/
+
+# Tungsten generated assets
+src/Generated/*.luau
+tungsten.lock.toml
+assets/generated/
+
+# Build / output
+build/
+dist/
+*.rbxl
+*.rbxlx
+
+# Python / ComfyUI
+__pycache__/
+.venv/
+venv/
+*.pyc
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+.claude/settings.json

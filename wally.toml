@@ -1,0 +1,34 @@
+[package]
+name = "baopi/game"
+version = "0.1.0"
+license = "MIT"
+authors = ["baopi"]
+realm = "shared"
+registry = "https://github.com/UpliftGames/wally-index"
+
+[dependencies]
+# UI: Fusion (state-driven) + OnyxUI components (built on Fusion)
+Fusion = "elttob/fusion@0.2.0"
+OnyxUI = "imavafe/onyx-ui@1.0.4"
+# Colour utilities required by OnyxUI
+ColourUtils = "csqrl/colour-utils@1.4.1"
+# State management (framework-agnostic)
+Rodux = "roblox/rodux@3.0.0"
+# Rodux <-> Fusion bridge (requires Fusion 0.2.x, hence the 0.2.0 pin above)
+FusionRodux = "vflour/fusionrodux-2@0.1.32"
+# Async utilities
+Promise = "evaera/promise@4.0.0"
+# Atomic reactive state (optional, pairs well with Fusion/Rodux)
+Charm = "littensy/charm@0.7.6"
+
+# NOTE: TestEZ is removed (deprecated). Jest for Lua (jest-lua / jest-roblox) is the modern replacement.
+# To use Jest, add a git dependency:
+#   [dev-dependencies]
+#   Jest = { git = "https://github.com/attemptintime/jest-lua", tag = "v1.0.0" }
+# Or use the Luna registry: "lune-testing/jest-lua@latest"
+#
+# Until then, use `lune run automations/test.luau` for a local smoke test (build + fmt check).
+
+[dev-dependencies]
+# Test runner: use `lune run automations/test.luau` (build smoke test)
+# For unit tests, consider Jest (see package note above)

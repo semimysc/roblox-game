@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rokit
+        shell: pwsh
+        run: |
+          Invoke-RestMethod https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.ps1 | Invoke-Expression
+          echo "$env:USERPROFILE\.rokit\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+
+      - name: Install tools & packages
+        shell: pwsh
+        run: |
+          rokit install
+          wally install
+
+      - name: Format check
+        shell: pwsh
+        run: stylua --check src/ automations/
+
+      - name: Lint
+        shell: pwsh
+        run: selene src/
+
+      - name: Build place
+        shell: pwsh
+        run: rojo build default.project.json --output build/Game.rbxl
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: place
+          path: build/Game.rbxl
