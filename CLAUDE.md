@@ -11,22 +11,32 @@ Professional Roblox toolchain, managed entirely through [Rokit](https://github.c
 - (selene linting config present; install `selene` separately if desired.)
 
 ## Project layout
-- `default.project.json` — Rojo project tree → `src/Server`, `src/Client`, `src/Shared`, `src/StarterCharacter`, `src/Packages` (Wally output), `src/Generated` (Tungsten output).
-- `wally.toml` — package dependencies (Fusion + OnyxUI + Rodux + FusionRodux-2 bridge, Promise, Charm).
+- `default.project.json` — Rojo project tree → `src/Server`, `src/Client`, `src/Shared`, `src/StarterCharacter`, `src/Packages` (Wally output), `src/DevPackages` (Jest test deps), `src/Generated` (Tungsten output).
+- `wally.toml` — package dependencies (Fusion + OnyxUI + Rodux + FusionRodux-2 bridge, Promise, Charm) and dev-deps (Jest + JestGlobals).
 - `tungsten.toml` — asset sync config.
-- `automations/` — Lune scripts: `build`, `test`, `lint`, `fmt`, `sync`, `setup`.
+- `automations/` — Lune scripts: `build`, `test`, `lint`, `fmt`, `sync`, `setup`, `serve`, `comfy`.
+- `WORKFLOW.md` — full dev-loop docs (Studio sync, Jest, Tungsten, ComfyUI).
 
 ## Common commands
 ```pwsh
 rokit install          # install all Rokit-managed tools
-wally install          # install Luau packages into src/Packages
+wally install          # install Luau packages into src/Packages + DevPackages
 lune run setup         # install tools + packages + format
+lune run serve         # start Rojo live-sync server (connect from Studio plugin)
 lune run build         # produce build/Game.rbxl
 lune run fmt           # format
 lune run lint          # lint (selene)
-lune run test          # smoke test (build + fmt check)
+lune run test          # fmt check + build (tests packed into place)
 lune run sync          # push assets to Roblox cloud (needs TUNGSTEN_API_KEY)
+lune run comfy         # launch ComfyUI (needs up-to-date NVIDIA driver)
 ```
+
+## Testing (Jest Lua / jsdotlua)
+- Tests are `*.spec.luau` under `src/`; config at `src/Shared/jest.config.lua` (testMatch `**/*.spec.luau`).
+- Entry point: `src/Shared/run-tests.luau` calls `require("@DevPackages/Jest").runCLI`.
+- Tests `require("@DevPackages/JestGlobals")` for `describe`/`it`/`expect` (no globals injected).
+- Jest runs *inside* Roblox: `lune run test` builds the place, then run `run-tests` in Studio.
+- `Jest@3.10.0` + `JestGlobals@3.10.0` are the working pins (3.6.x rc lines are NOT self-consistent in the index).
 
 ## ComfyUI / Comfy-pilot guardrails
 This repo is also wired to **Comfy-pilot** (ComfyUI MCP server) in `~/.claude.json`.
