@@ -6,7 +6,7 @@
 --   * ProximityPrompts on every interactable (the "enter mode" button)
 -- Clients read MapLayout + Theme to mirror the same UI in 2D.
 
-local MapLayout = require(script.Parent.Parent.Shared.Data.MapLayout)
+local MapLayout = require(game:GetService("ReplicatedStorage").Shared.Data.MapLayout)
 
 local Builder = {}
 Builder.__index = Builder

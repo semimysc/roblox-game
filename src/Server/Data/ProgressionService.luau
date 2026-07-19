@@ -14,7 +14,7 @@
 local RunService = game:GetService("RunService")
 local Profiles = require(script.Parent.Parent.Data.Profiles)
 local WorldStateService = require(script.Parent.Parent.Data.WorldStateService)
-local AccountProgression = require(script.Parent.Parent.Parent.Shared.Data.AccountProgression)
+local AccountProgression = require(game:GetService("ReplicatedStorage").Shared.Data.AccountProgression)
 
 local ProgressionService = {}
 

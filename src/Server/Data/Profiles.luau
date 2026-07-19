@@ -14,8 +14,8 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
-local ProfileService = require(script.Parent.Parent.Parent.Packages.ProfileService)
-local ProfileTemplate = require(script.Parent.Parent.Parent.Shared.Data.ProfileTemplate)
+local ProfileService = require(game:GetService("ReplicatedStorage").Packages.ProfileService)
+local ProfileTemplate = require(game:GetService("ReplicatedStorage").Shared.Data.ProfileTemplate)
 
 local Profiles = {}
 

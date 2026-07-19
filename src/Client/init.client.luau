@@ -6,15 +6,15 @@ local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 
-local Fusion = require(script.Parent.Parent.Packages.Fusion)
+local Fusion = require(game:GetService("ReplicatedStorage").Packages.Fusion)
 local Value = Fusion.Value
 
-local Store = require(script.Parent.Parent.Shared.Store)
+local Store = require(game:GetService("ReplicatedStorage").Shared.Store)
 local store = Store.makeStore()
 
 local Theme = require(script.Parent.UI.Theme)
 local ZoneUI = require(script.Parent.UI.ZoneUI)
-local MapLayout = require(script.Parent.Parent.Shared.Data.MapLayout)
+local MapLayout = require(game:GetService("ReplicatedStorage").Shared.Data.MapLayout)
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")

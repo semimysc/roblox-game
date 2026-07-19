@@ -2,7 +2,7 @@
 -- The server is the source of truth; the client mirrors state into Fusion
 -- state objects for rendering. This file is required by both sides.
 
-local Rodux = require(script.Parent.Parent.Packages.Rodux)
+local Rodux = require(game:GetService("ReplicatedStorage").Packages.Rodux)
 
 export type GameAction =
 	{ type: "score/increment" }

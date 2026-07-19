@@ -10,7 +10,7 @@
 --   WSS.start()                 -- hook into Profiles.ready
 --   WSS.evaluate(player)       -- manual re-eval (after XP gain, etc.)
 
-local WorldState = require(script.Parent.Parent.Shared.Data.WorldState)
+local WorldState = require(game:GetService("ReplicatedStorage").Shared.Data.WorldState)
 local Profiles = require(script.Parent.Profiles)
 
 local WorldStateService = {}

@@ -1,7 +1,7 @@
 -- Shared counter store built on Rodux.
 -- This is a tiny example of shared state the client and server can both reference.
 
-local Rodux = require(script.Parent.Parent.Packages.Rodux)
+local Rodux = require(game:GetService("ReplicatedStorage").Packages.Rodux)
 
 export type CounterAction = { type: "increment" } | { type: "decrement" } | { type: "set", value: number }
 

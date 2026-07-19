@@ -4,7 +4,7 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Store = require(script.Parent.Parent.Shared.Store)
+local Store = require(ReplicatedStorage.Shared.Store)
 local store = Store.makeStore()
 
 local MapBuilder = require(script.Parent.Map.Builder)

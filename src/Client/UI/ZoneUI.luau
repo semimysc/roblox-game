@@ -4,7 +4,7 @@
 -- come from Theme; all copy/structure comes from MapLayout. To restyle
 -- for the Mihoyo look later, edit Theme + this component only.
 
-local Fusion = require(script.Parent.Parent.Packages.Fusion)
+local Fusion = require(game:GetService("ReplicatedStorage").Packages.Fusion)
 local Value = Fusion.Value
 local Computed = Fusion.Computed
 local New = Fusion.New
@@ -13,7 +13,7 @@ local Children = Fusion.Children
 local Cleanup = Fusion.Cleanup
 
 local Theme = require(script.Parent.Theme)
-local MapLayout = require(script.Parent.Parent.Shared.Data.MapLayout)
+local MapLayout = require(game:GetService("ReplicatedStorage").Shared.Data.MapLayout)
 
 local ZoneUI = {}
 ZoneUI.__index = ZoneUI
