@@ -1,7 +1,9 @@
 name: Test
 
-# Testing-only CI. This does NOT build/publish the place or upload artifacts —
-# it verifies the code compiles, is formatted, and passes the Jest test suite.
+# Testing-only CI. Does NOT build/publish the place or upload artifacts —
+# it verifies the code compiles, is formatted, and would pass Jest specs.
+# (Jest runs inside a Roblox runtime; the headless run is gated behind
+#  Studio auth which we enable later.)
 
 on:
   push:
@@ -14,28 +16,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rokit
-        uses: CompeyDev/setup-rokit@v0.1.2
+      - name: Install Rokit toolchain
+        shell: pwsh
+        run: |
+          Invoke-RestMethod https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.ps1 | Invoke-Expression
+          echo "$env:USERPROFILE\.rokit\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
 
-      - name: Install Wally packages
+      - name: Install Wally packages (incl. DevPackages for Jest)
         shell: pwsh
         run: wally install
 
-      - name: Format check
+      - name: Format check (stylua)
         shell: pwsh
-        run: stylua --check src/ automations/
+        run: rokit run stylua --check src/ automations/
 
-      - name: Type / compile check (rojo build to a temp file, not published)
+      - name: Type / compile check (rojo build to temp, not published)
         shell: pwsh
-        run: rojo build default.project.json --output "$env:RUNNER_TEMP/test-place.rbxl"
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP "test-place.rbxl"
+          rokit run rojo build default.project.json --output $out
+          if (-not (Test-Path $out)) { throw "rojo build produced no place file" }
 
-      # Jest runs *inside* a Roblox runtime. run-in-roblox drives a headless
-      # Studio to execute src/Shared/run-tests.luau and fails the job on any
-      # failing spec. Requires the ROBLOX_STUDIO auth handled by the action.
+      # Jest specs run inside a Roblox runtime. run-in-roblox drives a
+      # headless Studio to execute src/Shared/run-tests.luau and fails on any
+      # failing spec. Enable once Studio auth is configured in CI.
       - name: Run Jest specs
         shell: pwsh
         continue-on-error: true
         run: |
-          Write-Host "Jest specs are run via run-in-roblox; enable once Studio auth is configured in CI."
+          Write-Host "Jest specs run via run-in-roblox; enable once Studio auth is configured in CI."
           # rokit add rojo-rbx/run-in-roblox
-          # run-in-roblox --place "$env:RUNNER_TEMP/test-place.rbxl" --script src/Shared/run-tests.luau
+          # $out = Join-Path $env:RUNNER_TEMP "test-place.rbxl"
+          # run-in-roblox --place $out --script src/Shared/run-tests.luau
