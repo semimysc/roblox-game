@@ -23,9 +23,8 @@ jobs:
           # Make the rokit bin dir available to the rest of the job.
           $bin = "$env:USERPROFILE\.rokit\bin"
           echo "$bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
-          # Also export now so this shell sees it.
-          echo "PATH=$bin;$env:PATH" >> $env:GITHUB_ENV
-          # Install rokit-managed tools (rojo, wally, stylua, ...) from rokit.toml.
+          # Install rokit-managed tools IN THIS SHELL (prepend so rokit resolves).
+          $env:PATH = "$bin;$env:PATH"
           rokit install
 
       - name: Install Wally packages (incl. DevPackages for Jest)
@@ -43,14 +42,13 @@ jobs:
           rokit run rojo build default.project.json --output $out
           if (-not (Test-Path $out)) { throw "rojo build produced no place file" }
 
-      # Jest specs run inside a Roblox runtime. run-in-roblox drives a
-      # headless Studio to execute src/Shared/run-tests.luau and fails on any
-      # failing spec. Enable once Studio auth is configured in CI.
-      - name: Run Jest specs
+      # Jest specs run INSIDE Roblox Studio (the one-click Test tab /
+      # run-tests.luau), per the user's setup. They are NOT run in CI
+      # because a headless Roblox runtime is not available on the runner.
+      # CI covers compile (rojo build) + format (stylua) only.
+      - name: Jest specs (run in Studio Test tab)
         shell: pwsh
         continue-on-error: true
         run: |
-          Write-Host "Jest specs run via run-in-roblox; enable once Studio auth is configured in CI."
-          # rokit add rojo-rbx/run-in-roblox
-          # $out = Join-Path $env:RUNNER_TEMP "test-place.rbxl"
-          # run-in-roblox --place $out --script src/Shared/run-tests.luau
+          Write-Host "Jest specs run via the Roblox Studio Test tab (run-tests.luau)."
+          Write-Host "CI runs compile + format only; see Counter.spec.luau for the suite."
