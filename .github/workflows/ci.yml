@@ -20,7 +20,11 @@ jobs:
         shell: pwsh
         run: |
           Invoke-RestMethod https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.ps1 | Invoke-Expression
-          echo "$env:USERPROFILE\.rokit\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+          # Make the rokit bin dir available to the rest of the job.
+          $bin = "$env:USERPROFILE\.rokit\bin"
+          echo "$bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+          # Also export now so this shell sees it.
+          echo "PATH=$bin;$env:PATH" >> $env:GITHUB_ENV
 
       - name: Install Wally packages (incl. DevPackages for Jest)
         shell: pwsh
