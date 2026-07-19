@@ -1,18 +1,24 @@
 -- Server entry point (ServerScriptService.Server).
--- Owns the authoritative Rodux store and mirrors player join/leave into it.
+-- Owns the authoritative Rodux store AND builds the hub map from data.
 
 local Players = game:GetService("Players")
 local Store = require(script.Parent.Parent.Shared.Store)
 local store = Store.makeStore()
 
-local function onPlayerAdded(player: Player) store:dispatch({ type = "player/add", name = player.Name }) end
+local MapBuilder = require(script.Parent.Map.Builder)
 
+-- Build the single-building hub (rooms, stairs, indicators, radio station, prompts).
+local builder = MapBuilder.new()
+builder:buildBuildEnvelope()
+builder:buildRooms()
+builder:buildModeMarkers()
+builder:finish()
+
+local function onPlayerAdded(player: Player) store:dispatch({ type = "player/add", name = player.Name }) end
 local function onPlayerRemoving(player: Player) store:dispatch({ type = "player/remove", name = player.Name }) end
 
 Players.PlayerAdded:Connect(onPlayerAdded)
 Players.PlayerRemoving:Connect(onPlayerRemoving)
-
--- Seed any players already present (e.g. Studio test session).
 for _, player in Players:GetPlayers() do
 	onPlayerAdded(player)
 end
@@ -31,4 +37,4 @@ store.changed:connect(function(state)
 	))
 end)
 
-print("Game server started (authoritative Rodux store)")
+print("[server] Hub building constructed; game server started.")
