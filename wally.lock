@@ -5,7 +5,12 @@ registry = "test"
 [[package]]
 name = "baopi/game"
 version = "0.1.0"
-dependencies = [["Charm", "littensy/charm@0.7.6"], ["ColourUtils", "csqrl/colour-utils@1.4.1"], ["Fusion", "elttob/fusion@0.2.0"], ["FusionRodux", "vflour/fusionrodux-2@0.1.32"], ["OnyxUI", "imavafe/onyx-ui@1.0.4"], ["Promise", "evaera/promise@4.0.0"], ["Rodux", "roblox/rodux@3.0.0"], ["Jest", "jsdotlua/jest@3.10.0"], ["JestGlobals", "jsdotlua/jest-globals@3.10.0"]]
+dependencies = [["Charm", "littensy/charm@0.7.6"], ["ColourUtils", "csqrl/colour-utils@1.4.1"], ["Fusion", "elttob/fusion@0.2.0"], ["FusionRodux", "vflour/fusionrodux-2@0.1.32"], ["OnyxUI", "imavafe/onyx-ui@1.0.4"], ["ProfileService", "brittonfischer/profileservice@2.1.5"], ["Promise", "evaera/promise@4.0.0"], ["Rodux", "roblox/rodux@3.0.0"], ["Jest", "jsdotlua/jest@3.10.0"], ["JestGlobals", "jsdotlua/jest-globals@3.10.0"]]
+
+[[package]]
+name = "brittonfischer/profileservice"
+version = "2.1.5"
+dependencies = []
 
 [[package]]
 name = "csqrl/colour-utils"

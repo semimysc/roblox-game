@@ -20,6 +20,11 @@ FusionRodux = "vflour/fusionrodux-2@0.1.32"
 Promise = "evaera/promise@4.0.0"
 # Atomic reactive state (optional, pairs well with Fusion/Rodux)
 Charm = "littensy/charm@0.7.6"
+# Data persistence: session-locked, auto-saving DataStore wrapper.
+# brittonfischer/profileservice is the maintained fork of loleris/ProfileService
+# present in the default Wally index. (The original author's successor, ProfileStore,
+# is NOT in this index — add via its own registry/git if you later migrate.)
+ProfileService = "brittonfischer/profileservice@2.1.5"
 
 # NOTE: TestEZ is removed (deprecated). Jest for Lua (jsdotlua port) is the modern replacement.
 # Jest runs inside Roblox Studio / the Roblox test backend, not via Lune, so it is a
