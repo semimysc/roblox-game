@@ -1,5 +1,6 @@
 -- Server entry point (ServerScriptService.Server).
--- Owns the authoritative Rodux store AND builds the hub map from data.
+-- Owns the authoritative Rodux store, builds the hub map, and runs the
+-- player data layer (ProfileService + progression + world-state unlocks).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -9,8 +10,9 @@ local store = Store.makeStore()
 local MapBuilder = require(script.Parent.Map.Builder)
 local Profiles = require(script.Parent.Data.Profiles)
 local WorldStateService = require(script.Parent.Data.WorldStateService)
+local ProgressionService = require(script.Parent.Data.ProgressionService)
 
--- RemoteEvent used by WorldStateService to tell the client about unlocks.
+-- RemoteEvent used by WorldStateService/ProgressionService to tell the client.
 if not ReplicatedStorage:FindFirstChild("WorldStateChanged") then
 	local ev = Instance.new("RemoteEvent")
 	ev.Name = "WorldStateChanged"
@@ -24,8 +26,9 @@ builder:buildRooms()
 builder:buildModeMarkers()
 builder:finish()
 
--- Start the data layer: load profiles on join, drive progression.
+-- Start the data layer: load profiles, drive progression + world unlocks.
 Profiles.start()
+ProgressionService.start()
 WorldStateService.start()
 
 local function onPlayerAdded(player: Player) store:dispatch({ type = "player/add", name = player.Name }) end
@@ -51,4 +54,4 @@ store.changed:connect(function(state)
 	))
 end)
 
-print("[server] Hub building constructed; game server started.")
+print("[server] Hub building constructed; data + progression + world-state services started.")
