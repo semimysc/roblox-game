@@ -44,7 +44,7 @@ jobs:
         run: |
           $bin = "$env:USERPROFILE\.rokit\bin"
           $env:PATH = "$bin;$env:PATH"
-          rokit run stylua --check src/ automations/
+          stylua --check src/ automations/
 
       - name: Compile check (rojo build to temp)
         shell: pwsh
@@ -52,5 +52,5 @@ jobs:
           $bin = "$env:USERPROFILE\.rokit\bin"
           $env:PATH = "$bin;$env:PATH"
           $out = Join-Path $env:RUNNER_TEMP "test-place.rbxl"
-          rokit run rojo build default.project.json --output $out
+          rojo build default.project.json --output $out
           if (-not (Test-Path $out)) { throw "rojo build produced no place file" }
