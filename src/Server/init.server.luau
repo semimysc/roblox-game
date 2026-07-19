@@ -1,13 +1,34 @@
 -- Server entry point (ServerScriptService.Server).
-local Counter = require(script.Parent.Parent.Shared.Counter)
+-- Owns the authoritative Rodux store and mirrors player join/leave into it.
 
-local store = Counter.makeStore()
-print("Game server started; counter =", store:getState())
+local Players = game:GetService("Players")
+local Store = require(script.Parent.Parent.Shared.Store)
+local store = Store.makeStore()
 
--- Example: increment once per second so you can see state changing.
-task.spawn(function()
-	while true do
-		task.wait(1)
-		store:dispatch({ type = "increment" })
-	end
+local function onPlayerAdded(player: Player) store:dispatch({ type = "player/add", name = player.Name }) end
+
+local function onPlayerRemoving(player: Player) store:dispatch({ type = "player/remove", name = player.Name }) end
+
+Players.PlayerAdded:Connect(onPlayerAdded)
+Players.PlayerRemoving:Connect(onPlayerRemoving)
+
+-- Seed any players already present (e.g. Studio test session).
+for _, player in Players:GetPlayers() do
+	onPlayerAdded(player)
+end
+
+store.changed:connect(function(state)
+	print(string.format(
+		"[server] score=%d players=%d",
+		state.score,
+		(function()
+			local n = 0
+			for _ in pairs(state.players) do
+				n += 1
+			end
+			return n
+		end)()
+	))
 end)
+
+print("Game server started (authoritative Rodux store)")

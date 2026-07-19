@@ -1,8 +1,9 @@
 -- Jest test for the shared counter reducer.
--- Run with the Roblox test backend (jest-globals is built into the place file).
--- Convention: files matching *.spec.luau are picked up by the test runner.
+-- Run via the Jest Lua runner (jsdotlua). Tests require @DevPackages/JestGlobals
+-- for describe/it/expect — Jest injects nothing into the global scope.
+-- Convention: files matching *.spec.luau are picked up by jest.config.lua.
 
-local JestGlobals = require(script.Parent.Parent.Packages.JestGlobals)
+local JestGlobals = require("@DevPackages/JestGlobals")
 local expect = JestGlobals.expect
 local describe = JestGlobals.describe
 local it = JestGlobals.it

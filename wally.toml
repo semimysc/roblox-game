@@ -27,8 +27,8 @@ Charm = "littensy/charm@0.7.6"
 # To run tests: `rojo build` then use the Roblox Studio Test tab, or the jest-roblox CLI.
 
 [dev-dependencies]
-# Modern testing framework (Jest port by jsdotlua). Wally resolves its
-# transitive deps (expect, luau-polyfill, etc.) automatically.
-# NOTE: 3.10.0 in the index is internally inconsistent (requests luau-polyfill
-# >=3.10.0 which doesn't exist), so we pin to a self-consistent rc line.
-JestGlobals = "jsdotlua/jest-globals@3.6.1-rc.2"
+# Modern testing framework (Jest port by jsdotlua).
+# `Jest` is the runner (pulls in jest-circus + jest-environment-roblox).
+# Tests require @DevPackages/JestGlobals for describe/it/expect.
+Jest = "jsdotlua/jest@3.10.0"
+JestGlobals = "jsdotlua/jest-globals@3.10.0"
