@@ -1,9 +1,10 @@
 name: Test
 
-# Testing-only CI. Does NOT build/publish the place or upload artifacts —
-# it verifies the code compiles, is formatted, and would pass Jest specs.
-# (Jest runs inside a Roblox runtime; the headless run is gated behind
-#  Studio auth which we enable later.)
+# Testing-only CI. Verifies the code is formatted and compiles into a place.
+# Jest specs are NOT run here: run-in-roblox (the headless Studio runner) is
+# outdated/untrusted in current Rokit, so tests are run manually in Studio
+# via ReplicatedStorage/Shared/run-tests.luau (Run button) — see Counter.spec.luau.
+# CI's job is to fail fast on format/compile breakage before it reaches Studio.
 
 on:
   push:
@@ -16,16 +17,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rokit toolchain + managed tools
+      - name: Install Rokit + managed tools
         shell: pwsh
         run: |
           Invoke-RestMethod https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.ps1 | Invoke-Expression
-          # Make the rokit bin dir available to the rest of the job.
+          # Make the rokit bin available for THIS step AND the rest of the job.
           $bin = "$env:USERPROFILE\.rokit\bin"
           echo "$bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
-          # Install rokit-managed tools IN THIS SHELL (prepend so rokit resolves).
           $env:PATH = "$bin;$env:PATH"
-          # Rokit gates installs behind an explicit trust step.
           rokit trust rojo-rbx/rojo
           rokit trust UpliftGames/wally
           rokit trust lune-org/lune
@@ -33,28 +32,25 @@ jobs:
           rokit trust pwnwrkz/tungsten
           rokit install
 
-      - name: Install Wally packages (incl. DevPackages for Jest)
+      - name: Install Wally packages
         shell: pwsh
-        run: wally install
+        run: |
+          $bin = "$env:USERPROFILE\.rokit\bin"
+          $env:PATH = "$bin;$env:PATH"
+          wally install
 
       - name: Format check (stylua)
         shell: pwsh
-        run: rokit run stylua --check src/ automations/
+        run: |
+          $bin = "$env:USERPROFILE\.rokit\bin"
+          $env:PATH = "$bin;$env:PATH"
+          rokit run stylua --check src/ automations/
 
-      - name: Type / compile check (rojo build to temp, not published)
+      - name: Compile check (rojo build to temp)
         shell: pwsh
         run: |
+          $bin = "$env:USERPROFILE\.rokit\bin"
+          $env:PATH = "$bin;$env:PATH"
           $out = Join-Path $env:RUNNER_TEMP "test-place.rbxl"
           rokit run rojo build default.project.json --output $out
           if (-not (Test-Path $out)) { throw "rojo build produced no place file" }
-
-      # Jest specs run INSIDE Roblox Studio (the one-click Test tab /
-      # run-tests.luau), per the user's setup. They are NOT run in CI
-      # because a headless Roblox runtime is not available on the runner.
-      # CI covers compile (rojo build) + format (stylua) only.
-      - name: Jest specs (run in Studio Test tab)
-        shell: pwsh
-        continue-on-error: true
-        run: |
-          Write-Host "Jest specs run via the Roblox Studio Test tab (run-tests.luau)."
-          Write-Host "CI runs compile + format only; see Counter.spec.luau for the suite."

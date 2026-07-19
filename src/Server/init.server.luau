@@ -7,10 +7,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Store = require(ReplicatedStorage.Shared.Store)
 local store = Store.makeStore()
 
-local MapBuilder = require(script.Parent.Server.Map.Builder)
-local Profiles = require(script.Parent.Server.Data.Profiles)
-local WorldStateService = require(script.Parent.Server.Data.WorldStateService)
-local ProgressionService = require(script.Parent.Server.Data.ProgressionService)
+local MapBuilder = require(script.Map.Builder)
+local Profiles = require(script.Parent.Data.Profiles)
+local WorldStateService = require(script.Parent.Data.WorldStateService)
+local ProgressionService = require(script.Parent.Data.ProgressionService)
 
 -- RemoteEvent used by WorldStateService/ProgressionService to tell the client.
 if not ReplicatedStorage:FindFirstChild("WorldStateChanged") then

@@ -12,8 +12,8 @@ local Value = Fusion.Value
 local Store = require(game:GetService("ReplicatedStorage").Shared.Store)
 local store = Store.makeStore()
 
-local Theme = require(script.Parent.Client.UI.Theme)
-local ZoneUI = require(script.Parent.Client.UI.ZoneUI)
+local Theme = require(script.UI.Theme)
+local ZoneUI = require(script.UI.ZoneUI)
 local MapLayout = require(game:GetService("ReplicatedStorage").Shared.Data.MapLayout)
 
 local player = Players.LocalPlayer
