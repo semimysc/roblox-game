@@ -25,6 +25,12 @@ jobs:
           echo "$bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
           # Install rokit-managed tools IN THIS SHELL (prepend so rokit resolves).
           $env:PATH = "$bin;$env:PATH"
+          # Rokit gates installs behind an explicit trust step.
+          rokit trust rojo-rbx/rojo
+          rokit trust UpliftGames/wally
+          rokit trust lune-org/lune
+          rokit trust JohnnyMorganz/stylua
+          rokit trust pwnwrkz/tungsten
           rokit install
 
       - name: Install Wally packages (incl. DevPackages for Jest)

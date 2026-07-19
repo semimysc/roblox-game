@@ -1,23 +1,32 @@
 -- Jest Lua test entrypoint.
 -- Built into the place under ReplicatedStorage.Shared. Run from Roblox Studio
--- (or a headless runner) to execute all *.spec.luau tests.
--- Run with: select this script in Studio and press Play/Run, or trigger via the
--- test runner. See automations/test.luau for the build step.
+-- (select this script in Explorer, then press Run / F8) to execute all
+-- *.spec.luau tests. See automations/test.luau for the build step.
+--
+-- Uses the real jsdotlua/jest v3.10.0 API:
+--   runCLI(cwdInstance, argv, projects) -> Promise<{ results, ... }>
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local runCLI = require("@DevPackages/Jest").runCLI
 
 local root = ReplicatedStorage.Shared
 
-local status, result = runCLI(root, {
-	verbose = false,
-	ci = false,
-}, { root }):awaitStatus()
+local resolved
+local ok, result = pcall(function()
+	runCLI(root, {
+		verbose = false,
+		ci = false,
+	}, { root }):andThen(function(r) resolved = r end)
+	while resolved == nil do
+		task.wait()
+	end
+	return resolved
+end)
 
-if status == "Rejected" then
+if not ok or result == nil then
 	print("Jest run errored:")
 	print(result)
-elseif status == "Resolved" then
+else
 	local results = result.results
 	if results.numFailedTestSuites == 0 and results.numFailedTests == 0 then
 		print("All tests passed.")
