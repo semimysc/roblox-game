@@ -28,11 +28,18 @@ export type Combatant = {
 	originToken: number?, -- nil for leaders
 	currentToken: number?, -- mutable; nil for leaders
 	recall: { type: string, replacesWith: string?, returnsTo: any },
+	-- Exit-behavior thresholds (resolved via token recall, as conditions):
+	-- eject: a SINGLE hit removing >= this fraction of max HP knocks out.
+	-- retreat: CUMULATIVE HP lost >= this fraction of max HP forces retreat.
+	ejectThreshold: number,
+	retreatThreshold: number,
+	cumulativeLost: number, -- total HP lost (for retreat tracking)
 	active: boolean,
 	alive: boolean,
 	ultimate: any, -- { id, cost, effects }
 	abilities: { any },
 	passive: any?,
+	assist: any?, -- HSR-style off-field assist passive (granted by assist token)
 }
 
 local Combatant = {}
@@ -89,11 +96,15 @@ function Combatant.create(def: {
 		originToken = def.originToken,
 		currentToken = def.originToken,
 		recall = def.recall,
+		ejectThreshold = def.ejectThreshold or 0.3,
+		retreatThreshold = def.retreatThreshold or 0.6,
+		cumulativeLost = 0,
 		active = false,
 		alive = true,
 		ultimate = def.ultimate,
 		abilities = def.abilities,
 		passive = def.passive,
+		assist = def.assist,
 	}
 	setmetatable(self, Combatant)
 	return self
@@ -104,11 +115,29 @@ function Combatant:gainEnergy(amount: number) self.energy = math.min(self.energy
 
 function Combatant:ultimateReady(): boolean return self.energy >= self.energyMax end
 
-function Combatant:takeDamage(amount: number)
-	self.combat.hpCurrent = math.max(0, self.combat.hpCurrent - amount)
+-- Apply damage and return the exit REASON (if any), as conditions use it.
+-- Returns nil | "knockout" | "eject" | "retreat".
+--   knockout: HP hit 0 (normal switch trigger)
+--   eject:    a SINGLE hit removed >= ejectThreshold of max HP
+--   retreat:  CUMULATIVE HP lost >= retreatThreshold of max HP
+function Combatant:applyDamage(amount: number): string?
+	local before = self.combat.hpCurrent
+	self.combat.hpCurrent = math.max(0, before - amount)
+	self.cumulativeLost += amount
+	local maxHp = self.combat.hpPool
+
+	local instantFrac = amount / maxHp
+	local cumulativeFrac = self.cumulativeLost / maxHp
+
 	if self.combat.hpCurrent <= 0 then
 		self.alive = false
+		return "knockout"
+	elseif instantFrac >= self.ejectThreshold then
+		return "eject"
+	elseif cumulativeFrac >= self.retreatThreshold then
+		return "retreat"
 	end
+	return nil
 end
 
 function Combatant:heal(amount: number)

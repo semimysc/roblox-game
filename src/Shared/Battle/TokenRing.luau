@@ -2,11 +2,15 @@
 -- The Part A token system, made executable.
 --
 -- MODEL (from design):
---   * 3 tokens, each holding 2 cards -> 6 reserve. Plus 2 active on field.
+--   * 4 tokens, 2 slots each. Tokens 1-3 hold 2 cards (6 reserve); token 4 is
+--     the ASSIST TOKEN (initially empty). 2 cards active on field.
 --   * Normal flow: tokens advance CLOCKWISE. When a slot opens, the next card
 --     comes from the clockwise-neighbor token.
 --   * A recall token declares { replacesWith, returnsTo }.
 --   * Every card has originToken (fixed) + currentToken (mutates).
+--   * ASSIST: a card in the assist token (currentToken == assistToken) gains
+--     its assist passive (HSR-style off-field). Moving out REVOKES it, so
+--     assist is tied to CURRENT membership, not origin.
 --   * On recall a card chooses return: cross-token (token of the card it
 --     swapped with) or preserve origin. This divergence = emergent play.
 --
@@ -17,7 +21,8 @@
 local TokenRing = {}
 TokenRing.__index = TokenRing
 
-local TOKEN_COUNT = 3
+local TOKEN_COUNT = 4
+local ASSIST_TOKEN = 4 -- token 4: the (initially empty) assist token
 
 function TokenRing.new()
 	local self = setmetatable({}, TokenRing)
@@ -31,6 +36,20 @@ function TokenRing.new()
 end
 
 function TokenRing:clockwiseNext(from: number): number return (from % TOKEN_COUNT) + 1 end
+
+-- Is this card currently in the assist token? (grants assist passive)
+function TokenRing:isAssist(c: any): boolean return c.currentToken == ASSIST_TOKEN end
+
+-- Fire a card's assist passive (off-field, HSR-style). No swap occurs.
+function TokenRing:assist(c: any)
+	if not self:isAssist(c) then
+		return nil
+	end
+	if c.assist and c.assist.effects then
+		return c.assist.effects -- engine applies these as a passive
+	end
+	return nil
+end
 
 -- Place a combatant into a token slot (fills first empty slot).
 function TokenRing:assign(combatant, token: number)
