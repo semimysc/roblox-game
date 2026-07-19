@@ -4,6 +4,7 @@
 --
 -- Stats model (from game design):
 --   * StatBlock (declarative, HSR/ZZZ-shaped) holds base + accumulated mods.
+--     resolve() flattens base + modifiers into final combat numbers.
 --   * Combat HP-pool/damage are SEPARATE from base selection-screen stats and
 --     scaled by log10 of powerLevel.
 --   * Ultimate energy (HSR-style): fills by acting + taking hits.
@@ -11,36 +12,12 @@
 --   * Token identity (Part A dual-tag): originToken (fixed) + currentToken
 --     (mutable). Leaders have NO token.
 --   * Recall: a recall TYPE (clockwise/specified/conditional) + returnsTo.
+--   * Exit behaviors: eject (instant % HP loss), retreat (cumulative % HP
+--     lost). Both resolved via the recall behavior.
+--   * Assist: a card in the assist token (currentToken == assistToken) gains
+--     its assist passive (HSR-style off-field). Moving out REVOKES it.
 
 local Stats = require(script.Parent.Parent.Data.Stats)
-
-export type Combatant = {
-	id: string,
-	name: string,
-	kind: "leader" | "token",
-	element: string,
-	stats: any, -- StatBlock
-	-- Combat-only HP (log10-scaled), separate from base.
-	combat: { hpPool: number, hpCurrent: number, damage: number },
-	energy: number,
-	energyMax: number,
-	abilityBar: { max: number, points: number, regenPerTurn: number },
-	originToken: number?, -- nil for leaders
-	currentToken: number?, -- mutable; nil for leaders
-	recall: { type: string, replacesWith: string?, returnsTo: any },
-	-- Exit-behavior thresholds (resolved via token recall, as conditions):
-	-- eject: a SINGLE hit removing >= this fraction of max HP knocks out.
-	-- retreat: CUMULATIVE HP lost >= this fraction of max HP forces retreat.
-	ejectThreshold: number,
-	retreatThreshold: number,
-	cumulativeLost: number, -- total HP lost (for retreat tracking)
-	active: boolean,
-	alive: boolean,
-	ultimate: any, -- { id, cost, effects }
-	abilities: { any },
-	passive: any?,
-	assist: any?, -- HSR-style off-field assist passive (granted by assist token)
-}
 
 local Combatant = {}
 Combatant.__index = Combatant
@@ -61,6 +38,7 @@ function Combatant.create(def: {
 	ultimate: any,
 	abilities: { any },
 	passive: any?,
+	assist: any?,
 }): Combatant
 	local power = def.powerLevel or 1
 	local block = Stats.new({
@@ -96,8 +74,8 @@ function Combatant.create(def: {
 		originToken = def.originToken,
 		currentToken = def.originToken,
 		recall = def.recall,
-		ejectThreshold = def.ejectThreshold or 0.3,
-		retreatThreshold = def.retreatThreshold or 0.6,
+		ejectThreshold = def.ejectThreshold or 0.3, -- instant % HP loss -> eject
+		retreatThreshold = def.retreatThreshold or 0.6, -- cumulative % HP lost -> retreat
 		cumulativeLost = 0,
 		active = false,
 		alive = true,
@@ -117,12 +95,9 @@ function Combatant:ultimateReady(): boolean return self.energy >= self.energyMax
 
 -- Apply damage and return the exit REASON (if any), as conditions use it.
 -- Returns nil | "knockout" | "eject" | "retreat".
---   knockout: HP hit 0 (normal switch trigger)
---   eject:    a SINGLE hit removed >= ejectThreshold of max HP
---   retreat:  CUMULATIVE HP lost >= retreatThreshold of max HP
 function Combatant:applyDamage(amount: number): string?
 	local before = self.combat.hpCurrent
-	self.combat.hpCurrent = math.max(0, before - amount)
+	self.combat.hpCurrent = math.max(0, self.combat.hpCurrent - amount)
 	self.cumulativeLost += amount
 	local maxHp = self.combat.hpPool
 

@@ -59,14 +59,11 @@ function TokenRing:assign(combatant, token: number)
 	elseif slot[2] == nil then
 		slot[2] = combatant
 	else
-		-- token full; overwrite slot 2 (rare; design keeps 2 per token)
-		slot[2] = combatant
+		slot[2] = combatant -- token full; overwrite (design keeps 2/token)
 	end
 	combatant.currentToken = token
 end
 
--- Set the 2 active combatants (the starters; they start OUTSIDE a token
--- but still carry a recall token, per design).
 function TokenRing:setActive(a: any, b: any)
 	self.active[1] = a
 	self.active[2] = b
@@ -74,9 +71,8 @@ function TokenRing:setActive(a: any, b: any)
 	b.active = true
 end
 
--- Find the first available reserve card, preferring the clockwise neighbor
--- of the leaving card's current token (default behavior).
-function TokenRing:defaultSwapIn(leaving: any): any?
+-- Default clockwise swap-in search from the leaving card's current token.
+function TokenRing:defaultSwapIn(leaving: any): (any?, number?)
 	local start = self:clockwiseNext(leaving.currentToken)
 	for step = 1, TOKEN_COUNT do
 		local t = (start - 1 + step) % TOKEN_COUNT + 1
@@ -114,7 +110,6 @@ function TokenRing:resolveSwap(leaving: any, override: { replacesWith: string? }
 	if dest == "origin" then
 		dest = leaving.originToken
 	end
-	-- Free its old reserve slot, then place at dest (cross-token if chosen).
 	self:_removeFromTokens(leaving)
 	self:assign(leaving, dest)
 	leaving.active = false
@@ -123,7 +118,6 @@ function TokenRing:resolveSwap(leaving: any, override: { replacesWith: string? }
 	if incoming then
 		self:_removeFromTokens(incoming)
 		incoming.active = true
-		-- incoming's currentToken already reflects where it sat.
 	end
 
 	return incoming

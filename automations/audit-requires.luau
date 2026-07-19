@@ -68,21 +68,23 @@ local function resolve(startFile: string, expr: string): string?
 end
 
 local bad: { { file: string, line: number, expr: string } } = {}
-for _, entry in ipairs((function()
-	local out = {}
-	local function w(d: string)
-		for _, e in ipairs(fs.readDir(d)) do
-			local full = path.join(d, e)
-			if fs.exists(full) == "Dir" then
-				w(full)
-			else
-				table.insert(out, full)
+for _, entry in
+	ipairs((function()
+		local out = {}
+		local function w(d: string)
+			for _, e in ipairs(fs.readDir(d)) do
+				local full = path.join(d, e)
+				if fs.exists(full) == "Dir" then
+					w(full)
+				else
+					table.insert(out, full)
+				end
 			end
 		end
-	end
-	w(SRC)
-	return out
-end)()) do
+		w(SRC)
+		return out
+	end)())
+do
 	if not entry:match("%.luau$") and not entry:match("%.lua$") then
 		continue
 	end

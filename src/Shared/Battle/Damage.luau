@@ -1,46 +1,37 @@
 -- Shared.Battle.Damage
--- HSR-aligned damage calculation. The key correctness property: buffs are
--- DECLARATIVE LAYERS, never ad-hoc math:
+-- HSR-aligned damage with anomaly + resistance layers. Core correctness:
+--   * "damage bonus" (additive %) and "increase dmg" (multiplier) are SEPARATE
+--     declarative layers (see Stats.lua) — no ad-hoc math.
+--   * Anomaly procs on MASSIVE damage (ZZZ-style): if a single hit's fraction
+--     of the target's max HP exceeds ANOMALY_THRESHOLD, an anomaly of the
+--     attacker's element fires (player side only; enemies have no anomalies).
+--   * Weakness: if attacker element == target.weakness, multiply (super-effective).
 --
---   DMG = baseAttack
---       * (1 + SUM(damageBonus additive%))        -- ADDITIVE layer
---       * PROD(damageIncrease mult)               -- MULTIPLICATIVE layer
---       * defFactor                                -- attacker ATK vs target DEF
---       * (crit ? (1 + critDmg) : 1)              -- crit
---       * resFactor                                -- target elemental RES
---
--- "damage bonus"  (additive %)  -> layer "additive"
--- "increase dmg"  (multiplier)  -> layer "mult"
--- Stat increases on ATK/DEF are themselves additive/mult layers in StatBlock.
---
--- Pure function: same inputs -> same output (deterministic, testable).
+-- Pure + deterministic (RNG only for crit, which caller controls via forceCrit).
 
 local Damage = {}
 
--- HSR-style DEF factor. Uses level-scaled DEF:
---   defFactor = ATK / (ATK + DEF_stat * (1 + 10 * (level-1)/99?)) -- simplified
--- We use a stable form: ATK / (ATK + DEF * k), k tunable (k=1 default).
-function Damage.defFactor(atk: number, def: number, k: number?)
+-- Config (data-driven; tune later).
+Damage.ANOMALY_THRESHOLD = 0.25 -- a hit >= 25% of target max HP procs anomaly
+Damage.WEAKNESS_MULT = 1.5
+
+function Damage.defFactor(atk: number, defStat: number, k: number?)
 	k = k or 1
-	return atk / (atk + def * k)
+	return atk / (atk + defStat * k)
 end
 
--- Single-hit damage given attacker StatBlock, target StatBlock, ctx.
--- ctx carries: { crit = bool?, level = number?, targetRes = number? }
--- `mods` is the attacker's accumulated damage modifiers (additive/mult layers).
+-- Returns { amount: number, crit: bool, anomaly: string? }
 function Damage.calculate(
 	params: {
-		atkBlock: any, -- StatBlock (has .atk, .critRate, .critDmg, .mods)
-		defStat: number, -- target's resolved DEF
-		level: number?,
-		targetRes: number?, -- 0..1 elemental resistance (0 = neutral)
+		atkBlock: any, -- StatBlock (atk, critRate, critDmg, mods["damage"])
+		defStat: number, -- target resolved DEF
+		target: any?, -- for weakness/anomaly (has .weakness, .combat.hpPool)
 		forceCrit: boolean?,
 	}
-): number
+): { amount: number, crit: boolean, anomaly: string? }
 	local atkBlock = params.atkBlock
-	local baseAtk = Stats_atk(atkBlock)
-	local additive = 0
-	local mult = 1
+	local baseAtk = atkBlock.atk
+	local additive, mult = 0, 1
 	for _, m in pairs(atkBlock.mods) do
 		if m.stat ~= "damage" then
 			continue
@@ -52,22 +43,29 @@ function Damage.calculate(
 		end
 	end
 
-	local defK = 1
-	local df = Damage.defFactor(baseAtk, params.defStat, defK)
-
+	local df = Damage.defFactor(baseAtk, params.defStat, 1)
 	local crit = params.forceCrit or (math.random() < atkBlock.critRate)
 	local critMul = crit and (1 + atkBlock.critDmg) or 1
 
-	local res = params.targetRes or 0
-	local resFactor = 1 - res -- simplistic: 0 res = full dmg, 1 = immune
+	local amount = baseAtk * (1 + additive) * mult * df * critMul
+	amount = math.max(0, amount)
 
-	local dmg = baseAtk * (1 + additive) * mult * df * critMul * resFactor
-	return math.max(0, dmg)
+	-- Weakness (super-effective vs target type).
+	local target = params.target
+	if target and target.weakness and target.weakness == atkBlock.element then
+		amount *= Damage.WEAKNESS_MULT
+	end
+
+	-- Anomaly proc: massive single hit -> anomaly of attacker element (player only).
+	local anomaly
+	if target and target.combat and target.combat.hpPool > 0 then
+		local frac = amount / target.combat.hpPool
+		if frac >= Damage.ANOMALY_THRESHOLD and atkBlock.element ~= "Void" then
+			anomaly = atkBlock.element -- player-side element procs its anomaly
+		end
+	end
+
+	return { amount = amount, crit = crit, anomaly = anomaly }
 end
-
--- Small helper to read resolved atk from a StatBlock (kept local to avoid
--- a require cycle with Stats in this hot path; Stats.resolve is preferred
--- when you need layered ATK, but raw base atk is fine for the formula core).
-function Stats_atk(block) return block.atk end
 
 return Damage
