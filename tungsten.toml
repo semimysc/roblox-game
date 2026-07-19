@@ -10,7 +10,7 @@
 
 [creator]
 type = "user"
-id = 0   # your Roblox user id (or a group id with type = "group")
+id = 1032387470  # your Roblox user id (or a group id with type = "group")
 
 [codegen]
 style = "nested"

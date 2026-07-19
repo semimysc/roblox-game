@@ -1,4 +1,4 @@
 -- Shared entry point (runs on both server and client).
--- Add shared modules here.
+-- Require shared modules here so they are reachable from Server and Client.
 
 print("Game shared module loaded")

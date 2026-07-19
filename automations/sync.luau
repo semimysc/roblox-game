@@ -1,6 +1,6 @@
--- Lune automation: sync local assets to the Roblox cloud via Tungsten.
+-- Lune automation: sync local assets to the Roblox cloud via Tarmac.
 -- Usage: lune run sync
--- Requires TUNGSTEN_API_KEY (Roblox Open Cloud API key) in env.
+-- Requires OPEN_CLOUD_API_KEY (+ optionally PLACE_ID/UNIVERSE_ID) in env.
 local process = require("@lune/process")
 
 local function run(cmd)
@@ -21,13 +21,13 @@ local function run(cmd)
 	return res.code or 1
 end
 
-local key = process.env["TUNGSTEN_API_KEY"]
+local key = process.env["OPEN_CLOUD_API_KEY"]
 if not key or key == "" then
-	error("TUNGSTEN_API_KEY is not set; cannot sync assets. See tungsten.toml.")
+	error("OPEN_CLOUD_API_KEY is not set; cannot sync assets. See tarmac.toml.")
 end
 
-local code = run("tungsten sync --target cloud")
+local code = run("tarmac sync --target roblox")
 if code ~= 0 then
-	error("tungsten sync failed")
+	error("tarmac sync failed")
 end
 print("Assets synced to Roblox cloud.")

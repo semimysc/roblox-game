@@ -21,14 +21,14 @@ Promise = "evaera/promise@4.0.0"
 # Atomic reactive state (optional, pairs well with Fusion/Rodux)
 Charm = "littensy/charm@0.7.6"
 
-# NOTE: TestEZ is removed (deprecated). Jest for Lua (jest-lua / jest-roblox) is the modern replacement.
-# To use Jest, add a git dependency:
-#   [dev-dependencies]
-#   Jest = { git = "https://github.com/attemptintime/jest-lua", tag = "v1.0.0" }
-# Or use the Luna registry: "lune-testing/jest-lua@latest"
-#
-# Until then, use `lune run automations/test.luau` for a local smoke test (build + fmt check).
+# NOTE: TestEZ is removed (deprecated). Jest for Lua (jsdotlua port) is the modern replacement.
+# Jest runs inside Roblox Studio / the Roblox test backend, not via Lune, so it is a
+# dev-dependency only — it gets built into the place file and run by the Roblox test runner.
+# To run tests: `rojo build` then use the Roblox Studio Test tab, or the jest-roblox CLI.
 
 [dev-dependencies]
-# Test runner: use `lune run automations/test.luau` (build smoke test)
-# For unit tests, consider Jest (see package note above)
+# Modern testing framework (Jest port by jsdotlua). Wally resolves its
+# transitive deps (expect, luau-polyfill, etc.) automatically.
+# NOTE: 3.10.0 in the index is internally inconsistent (requests luau-polyfill
+# >=3.10.0 which doesn't exist), so we pin to a self-consistent rc line.
+JestGlobals = "jsdotlua/jest-globals@3.6.1-rc.2"
