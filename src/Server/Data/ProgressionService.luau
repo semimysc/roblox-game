@@ -12,8 +12,8 @@
 -- all side-effects here.
 
 local RunService = game:GetService("RunService")
-local Profiles = require(script.Parent.Parent.Data.Profiles)
-local WorldStateService = require(script.Parent.Parent.Data.WorldStateService)
+local Profiles = require(script.Parent.Profiles)
+local WorldStateService = require(script.Parent.WorldStateService)
 local AccountProgression = require(game:GetService("ReplicatedStorage").Shared.Data.AccountProgression)
 
 local ProgressionService = {}
