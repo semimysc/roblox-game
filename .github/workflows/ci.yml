@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rokit toolchain
+      - name: Install Rokit toolchain + managed tools
         shell: pwsh
         run: |
           Invoke-RestMethod https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.ps1 | Invoke-Expression
@@ -25,6 +25,8 @@ jobs:
           echo "$bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
           # Also export now so this shell sees it.
           echo "PATH=$bin;$env:PATH" >> $env:GITHUB_ENV
+          # Install rokit-managed tools (rojo, wally, stylua, ...) from rokit.toml.
+          rokit install
 
       - name: Install Wally packages (incl. DevPackages for Jest)
         shell: pwsh
