@@ -89,3 +89,4 @@ describe("Battle engine", function()
 		expect(sim.ring.active[1].energy).toBeGreaterThan(before)
 	end)
 end)
+-- CI gate verification
