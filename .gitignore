@@ -27,3 +27,6 @@ venv/
 Thumbs.db
 *.log
 .claude/settings.json
+
+# Wally dev dependencies (jest, etc.)
+DevPackages/
