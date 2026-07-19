@@ -197,6 +197,16 @@ MapLayout.MODES = {
 		themeColor = Color3.fromRGB(255, 210, 120),
 		built = true,
 	},
+	-- Non-gamemode touchpoints that still get an overhead indicator + prompt.
+	{
+		id = "CardShelf",
+		label = "Card Shelf",
+		description = "Manage your pack collection and build decks.",
+		indicatorCFrame = CFrame.new(-26, 16, 8),
+		zoneCFrame = CFrame.new(-26, 4, 0),
+		themeColor = Color3.fromRGB(200, 170, 255),
+		built = true,
+	},
 }
 
 -- Spawn / entrance.

@@ -14,7 +14,9 @@ local store = Store.makeStore()
 
 local Theme = require(script.UI.Theme)
 local ZoneUI = require(script.UI.ZoneUI)
+local OverheadHUD = require(script.UI.OverheadHUD)
 local MapLayout = require(game:GetService("ReplicatedStorage").Shared.Data.MapLayout)
+local WorldState = require(game:GetService("ReplicatedStorage").Shared.Data.WorldState)
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -82,6 +84,36 @@ local hud = Fusion.New("ScreenGui")({
 local zoneUi = ZoneUI.new(activeMode)
 zoneUi:mount(playerGui)
 hud.Parent = playerGui
+
+-- ---- OverheadHUD (Mihoyo-style always-on mode strip) ----
+-- Start from WorldState's static gate table; the server pushes live unlocks
+-- via the WorldStateChanged RemoteEvent (see Server/Data/WorldStateService).
+local function initialUnlocks()
+	local set = {}
+	for modeId, req in pairs(WorldState.MODE_UNLOCKS) do
+		set[modeId] = (req == nil) -- nil requirement = always open (Simulation)
+	end
+	return set
+end
+local unlocked = Value(initialUnlocks())
+local overhead = OverheadHUD.new(unlocked)
+overhead:mount(playerGui)
+
+-- Server -> client unlock deltas.
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local worldEvent = ReplicatedStorage:WaitForChild("WorldStateChanged", 10)
+if worldEvent then
+	worldEvent.OnClientEvent:Connect(function(payload)
+		-- payload = { unlockModes = {modeId=true}, ... }
+		if payload and payload.unlockModes then
+			local cur = unlocked:get()
+			for modeId in pairs(payload.unlockModes) do
+				cur[modeId] = true
+			end
+			unlocked:set(table.clone(cur))
+		end
+	end)
+end
 
 -- ---- ProximityPrompt -> open the matching ZoneUI panel ----
 -- The server tagged each interact anchor with Attribute "ModeId".
