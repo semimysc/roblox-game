@@ -1,96 +1,105 @@
 -- Shared.Battle.Combatant
 -- Runtime state of one card/character in battle. Pure data + small methods;
--- no Roblox APIs. The engine (Simulator/TokenRing) reads and mutates this.
+-- no Roblox APIs. Built FROM a CardDef (see Data.CardDef).
 --
 -- Stats model (from game design):
---   * base stats  -> auth/selection screen (Mihoyo-like sheet)
---   * combat stats -> the IN-BATTLE HP-pool and damage, SEPARATE from base,
---     and scaled by log10 of the card's power level (not linear).
---   * Ultimate energy -> HSR-style: fills by acting + taking hits.
---   * Token tags -> originToken (fixed) + currentToken (mutates on swaps).
---   * Recall token -> { replacesWith, returnsTo } declared by the card.
+--   * StatBlock (declarative, HSR/ZZZ-shaped) holds base + accumulated mods.
+--   * Combat HP-pool/damage are SEPARATE from base selection-screen stats and
+--     scaled by log10 of powerLevel.
+--   * Ultimate energy (HSR-style): fills by acting + taking hits.
+--   * Ability points: per-character bar, spent by AutoPlay on abilities.
+--   * Token identity (Part A dual-tag): originToken (fixed) + currentToken
+--     (mutable). Leaders have NO token.
+--   * Recall: a recall TYPE (clockwise/specified/conditional) + returnsTo.
 
-export type RecallToken = {
-	-- Which card id swaps in when THIS card leaves.
-	replacesWith: string?,
-	-- Where THIS card returns to: "origin" (its natural token) or a
-	-- specific token index (cross-token migration for emergent play).
-	returnsTo: "origin" | number,
-}
+local Stats = require(script.Parent.Parent.Data.Stats)
 
 export type Combatant = {
 	id: string,
 	name: string,
-	-- Base (selection-screen) sheet.
-	base: {
-		hp: number,
-		atk: number,
-		def: number,
-		spd: number,
-	},
-	-- Combat-only stats (separate from base; log10-scaled by power).
-	combat: {
-		hpPool: number,
-		hpCurrent: number,
-		damage: number,
-	},
-	-- Ultimate energy (0..energyMax).
+	kind: "leader" | "token",
+	element: string,
+	stats: any, -- StatBlock
+	-- Combat-only HP (log10-scaled), separate from base.
+	combat: { hpPool: number, hpCurrent: number, damage: number },
 	energy: number,
 	energyMax: number,
-	-- Token identity (Part A dual-tag model).
-	originToken: number, -- fixed from setup (1..3)
-	currentToken: number, -- mutates as swaps happen
-	-- Recall rule (every combatant has one).
-	recall: RecallToken,
-	-- Slot state.
-	active: boolean, -- on battlefield vs reserve
+	abilityBar: { max: number, points: number, regenPerTurn: number },
+	originToken: number?, -- nil for leaders
+	currentToken: number?, -- mutable; nil for leaders
+	recall: { type: string, replacesWith: string?, returnsTo: any },
+	active: boolean,
 	alive: boolean,
+	ultimate: any, -- { id, cost, effects }
+	abilities: { any },
+	passive: any?,
 }
 
 local Combatant = {}
 Combatant.__index = Combatant
 
--- powerLevel: the card's "tier" strength (drives log10 combat scaling).
--- logScale: combat stat = baseStat * (1 + k * log10(1 + powerLevel)).
-local function logScale(base: number, powerLevel: number, k: number): number
-	return base * (1 + k * math.log10(1 + powerLevel))
-end
+-- log10 combat scaling: combatStat = baseStat * (1 + k*log10(1+power)).
+local function logScale(base: number, power: number, k: number): number return base * (1 + k * math.log10(1 + power)) end
 
 function Combatant.create(def: {
 	id: string,
 	name: string,
-	base: { hp: number, atk: number, def: number, spd: number },
+	kind: "leader" | "token",
+	element: string,
+	stats: { hp: number, atk: number, def: number, spd: number, critRate: number?, critDmg: number? },
 	powerLevel: number,
-	originToken: number,
-	recall: RecallToken?,
-	energyMax: number?,
+	originToken: number?,
+	recall: { type: string, replacesWith: string?, returnsTo: any },
+	abilityBar: { max: number, regenPerTurn: number },
+	ultimate: any,
+	abilities: { any },
+	passive: any?,
 }): Combatant
 	local power = def.powerLevel or 1
-	local combatHp = logScale(def.base.hp, power, 0.5)
-	local combatDmg = logScale(def.base.atk, power, 0.5)
+	local block = Stats.new({
+		hp = def.stats.hp,
+		atk = def.stats.atk,
+		def = def.stats.def,
+		spd = def.stats.spd,
+		critRate = def.stats.critRate,
+		critDmg = def.stats.critDmg,
+		element = def.element,
+	})
+	local combatHp = logScale(def.stats.hp, power, 0.5)
+	local combatDmg = logScale(def.stats.atk, power, 0.5)
 
 	local self: Combatant = {
 		id = def.id,
 		name = def.name,
-		base = def.base,
+		kind = def.kind,
+		element = def.element,
+		stats = block,
 		combat = {
 			hpPool = combatHp,
 			hpCurrent = combatHp,
 			damage = combatDmg,
 		},
 		energy = 0,
-		energyMax = def.energyMax or 100,
+		energyMax = 100,
+		abilityBar = {
+			max = def.abilityBar.max,
+			points = def.abilityBar.max, -- start full
+			regenPerTurn = def.abilityBar.regenPerTurn,
+		},
 		originToken = def.originToken,
 		currentToken = def.originToken,
-		recall = def.recall or { replacesWith = nil, returnsTo = "origin" },
+		recall = def.recall,
 		active = false,
 		alive = true,
+		ultimate = def.ultimate,
+		abilities = def.abilities,
+		passive = def.passive,
 	}
 	setmetatable(self, Combatant)
 	return self
 end
 
--- HSR-style energy gain.
+-- HSR-style ultimate energy gain.
 function Combatant:gainEnergy(amount: number) self.energy = math.min(self.energyMax, self.energy + amount) end
 
 function Combatant:ultimateReady(): boolean return self.energy >= self.energyMax end
